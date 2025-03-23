@@ -5,6 +5,8 @@ from pygame.examples.audiocapture import sound
 import button
 import smoke
 from random import *
+#import meat
+
 
 
 pygame.init()
@@ -26,8 +28,9 @@ meat_images = [
     pygame.image.load('meat2.webp').convert_alpha(),
     pygame.image.load('almost_cooked_meat1.png').convert_alpha(),
     pygame.image.load('cooked_meat_1.png').convert_alpha(),
-    pygame.image.load('burnt_meat_!.png').convert_alpha
+    pygame.image.load('burnt_meat_!.png').convert_alpha()
 ]
+
 plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
@@ -39,10 +42,11 @@ hand3 = pygame.image.load("hand2.png").convert_alpha()
 pickle_plate = pygame.image.load('plate.png').convert_alpha()
 pickles = pygame.image.load('pickles.png').convert_alpha()
 
-
-# initial meat state
+# initialize meat array for summoning meat
 meat_state = 0
-meat = meat_images[meat_state]
+meat1 = meat_images[meat_state]
+#meats = pygame.sprite.Group()
+#single_meat = meat.Meat(meats)
 
 # in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
@@ -54,7 +58,7 @@ hand3 = pygame.transform.flip(hand3, True, True)
 soju = pygame.transform.scale(soju, (200, 200))
 rice_paper = pygame.transform.scale(rice_paper, (240,240))
 pickles= pygame.transform.scale(pickles, (240,240))
-meat = pygame.transform.scale(meat, (240,240))
+meat1 = pygame.transform.scale(meat1, (240,240))
 plate = pygame.transform.scale(plate, (320,320))
 meat_button = pygame.transform.scale(meat_button, (240, 240))
 pickle_plate = pygame.transform.scale(plate, (320,320))
@@ -126,18 +130,22 @@ sound_playing_2 = False
 # Track how long the meat is being cooked
 cooking_time = 0
 
+# Track how long the meat is being cooked
+cooking_time = 0
+
 def player(x, y):
     screen.blit(hand, (x, y))
-
 
 def draw_plate(x, y):
     screen.blit(plate, (x, y))
 
-
 def draw_meat(x, y):
-    screen.blit(meat, (x, y))
+    screen.blit(meat1, (x, y))
     # screen.blit(meat_2,(0, 0))
 
+# def spawn_meat():
+#     new_meat = meat.Meat(meats)
+#     meats.add(new_meat)
 
 def main_menu():
     screen.fill((205, 205, 253))
@@ -178,6 +186,7 @@ def mid_game_menu():
         if resume_button.draw(screen):
             pygame.mixer.music.unpause()
             run = False
+            
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
             sys.exit()
@@ -210,6 +219,7 @@ def gameover_menu():
             pygame.mixer.music.stop()
             counter, text = 60, '60'.rjust(3)
             game_loop()
+            
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
             sys.exit()
@@ -225,12 +235,10 @@ def gameover_menu():
 
         pygame.display.update()
 
-
-
 def game_loop():
     global running, counter, text, meat_x, meat_y, \
     dragging, sound_playing, ouch_sound, cooking_time, \
-    meat_state, sound_playing_2
+    meat_state, meat1, single_meat, sound_playing_2
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -263,6 +271,7 @@ def game_loop():
 
         draw_plate(plate_x, plate_y)
         draw_meat(meat_x, meat_y)
+        #meats.draw(screen)
 
         player(player_x, player_y)
         screen.blit(hand2,(SCREEN_WIDTH//2+ SCREEN_WIDTH//7+15, 0))
@@ -270,9 +279,10 @@ def game_loop():
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        meat_rect = meat.get_rect(topleft=(meat_x + 100, meat_y + 100))
-        meat_rect.width = meat.get_width() // 2
-        meat_rect.height = meat.get_height() // 2
+        meat_rect = meat1.get_rect(topleft=(meat_x + 100, meat_y + 100))
+        meat_rect.width = meat1.get_width() // 2
+        meat_rect.height = meat1.get_height() // 2
+
         grill_rect = grill.get_rect(center=(SCREEN_WIDTH / 2 + 95, SCREEN_HEIGHT // 2 + 230))
         grill_rect.width = grill.get_width() // 2
         grill_rect.height = grill.get_height() // 2
@@ -282,12 +292,18 @@ def game_loop():
         grill_mask = pygame.mask.from_surface(grill)
         #pygame.draw.rect(screen, pygame.Color('green'), grill_rect) for debugging purposes
         grill_mask.fill()
+        plate_2rect = plate_2.get_rect(topleft=(600,0))
+        plate_2rect.width = plate_2.get_width()//2
+        plate_2rect.height = plate_2.get_height() //2
+        pygame.draw.rect(screen, pygame.Color('red'), plate_2rect)
         pygame.mouse.set_visible(False)
 
         if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y)) \
                 and pygame.mouse.get_pressed()[0]:
             dragging = True
+            #single_meat.start_drag(mouse_x, mouse_y)
         else:
+            #single_meat.stop_drag()
             dragging = False
 
         if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)) \
@@ -332,11 +348,29 @@ def game_loop():
                 channel2.stop()
                 sound_playing_2 = False
 
+            cooking_time += 1
+        
+        if cooking_time == 300:
+            meat_state = 1
+            meat1 = meat_images[meat_state]
+        elif cooking_time == 600:
+            meat_state = 2
+            meat1 = meat_images[meat_state]
+        elif cooking_time == 900:
+            meat_state = 3
+            meat1 = meat_images[meat_state]
+        elif cooking_time == 1200:
+            meat_state = 4
+            meat1 = meat_images[meat_state]
+        
+        if plate_2rect.colliderect(meat_rect) and not dragging:
+            if meat_state == 3:
+                pass
+            else:
+                pass
+
         pygame.display.flip()
         clock.tick(60)
-
-
-
 
 main_menu()
 
