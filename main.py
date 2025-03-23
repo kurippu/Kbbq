@@ -151,6 +151,7 @@ def game_loop():
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
+
     while running:
         screen.fill((85, 52, 43))
 
