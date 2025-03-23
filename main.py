@@ -13,15 +13,17 @@ flags = pygame.SCALED | pygame.FULLSCREEN
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags, vsync=1)
 
 pygame.display.set_caption("The Korean BBQ Experience")
-
+#mari smells
 # in-game sprite objects
 beer = pygame.image.load('beercan.png').convert_alpha()
 grill = pygame.image.load('grill.webp').convert_alpha()
 meat = pygame.image.load('Meat.png').convert_alpha()
 plate = pygame.image.load('plate.png').convert_alpha()
+plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
 #soju = pygame.image.load('').convert_alpha()
+
 #in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
 
@@ -135,6 +137,7 @@ def game_loop():
         screen.fill((85, 52, 43))
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
+        screen.blit(plate_2, (500,-50))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
@@ -200,9 +203,7 @@ def game_loop():
 
         pygame.display.flip()
         clock.tick(60)
-        # delta_time = clock.tick(60) / 1000
-        # delta_time = max(0.001, min(0.1, delta_time))
-
+       
 main_menu()
 
 pygame.quit()
