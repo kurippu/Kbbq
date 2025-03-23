@@ -73,10 +73,10 @@ plate_y = meat_y - 70
 dragging = False
 
 def player(x, y):
-   # screen.blit(hand,(x ,y))
+    screen.blit(hand,(x ,y))
    # Offset hand image to appear above the cursor
-    offset_y = -150  # You can tweak this value as needed
-    screen.blit(hand, (x - hand.get_width() // 2, y + offset_y))
+    #offset_y = -150  # You can tweak this value as needed
+    #screen.blit(hand, (x - hand.get_width() // 2, y + offset_y))
 
 
 def draw_plate(x,y):
@@ -172,11 +172,14 @@ def game_loop():
 
         meat_rect = meat.get_rect(topleft=(meat_x, meat_y))
         grill_rect = grill.get_rect()
+        soju_rect = soju.get_rect()
         hand_mask = pygame.mask.from_surface(hand)
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
+        soju_mask = pygame.mask.from_surface(soju)
         grill_mask.fill()
-        pygame.mouse.set_visible(True)
+        soju_mask.fill()
+        pygame.mouse.set_visible(False)
 
         if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                 and pygame.mouse.get_pressed()[0]:
@@ -184,9 +187,15 @@ def game_loop():
         else:
             dragging = False
 
-        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)) and not meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y)):
+        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y))\
+                and not dragging and pygame.mouse.get_pressed()[0]:
             ouch_sound = pygame.mixer.Sound("ouch.mp3")
             ouch_sound.play()
+        
+        if soju_mask.overlap(hand_mask, (mouse_x - soju_rect.x, mouse_y - soju_rect.y)) and pygame.mouse.get_pressed()[0]:
+            ouch_sound = pygame.mixer.Sound("ouch.mp3")
+            ouch_sound.play()
+        
 
         for event in pygame.event.get():
             if event.type == pygame.USEREVENT:
