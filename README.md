@@ -11,11 +11,11 @@
 # Installation 
 #### Make sure you have python downlowdnded on your device, if you don't have python downloaded, down below is the link that will direct you to the page to download it onto your device. 
 
-[Download Python](#https://www.python.org/downloads/)
+[Download Python](https://www.python.org/downloads/)
 
 #### After having python installed you will now be required to download pygame as that is our main framework for this project! Down below is the link wth directions to download pygame as the commands vary from each OS. 
 
-[Download Pygame] (https://www.pygame.org/wiki/GettingStarted)
+[Download Pygame](https://www.pygame.org/wiki/GettingStarted)
 
 #### Once you have these downloaded you can download this github folder and run the code! 
 
