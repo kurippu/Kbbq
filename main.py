@@ -188,17 +188,19 @@ def game_loop():
                     mid_game_menu()
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
-            if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
-                    and not dragging: #for smoke on grill
-                if len(smoke_group) < 100:
-                    pos = [meat_x + randint(-10, 10), meat_y + randint(-10, 10)]
-                    color = "gray"
-                    angle = randint(-30,30)
-                    direction = pygame.math.Vector2(0, -1).rotate(angle)
-                    speed = randint(50, 100)
-                    smoke.Smoke(smoke_group, pos, color, direction, speed)
-                else:
-                    smoke_group.remove(smoke_group.sprites()[0])
+
+        if grill_mask.overlap(meat_mask, (meat_rect.centerx - grill_rect.centerx, meat_rect.centery - grill_rect.centery)) and not dragging: #for smoke on grill
+            smoke_group.update()
+            if len(smoke_group) < 100:
+                pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
+                angle = randint(-30,30)
+                direction = pygame.math.Vector2(0, -1).rotate(angle)
+                speed = randint(2, 5)
+                smoke.Smoke(smoke_group, pos, direction, speed)
+            else:
+                smoke_group.remove(smoke_group.sprites()[0])
+            smoke_group.draw(screen)
+
 
 
         pygame.display.flip()
