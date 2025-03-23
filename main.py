@@ -1,5 +1,7 @@
 import sys
 import pygame
+from pygame.examples.audiocapture import sound
+
 import button
 import smoke
 from random import *
@@ -110,15 +112,16 @@ dragging = False
 ouch_sound = pygame.mixer.Sound("ouch.mp3")
 ouch_sound.set_volume(1.0)
 
-#sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
-#sizzling_sound.set_volume(1.0)
+sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
+sizzling_sound.set_volume(1.0)
 
 # channel to make sure one sound effect is playing at a time
 channel1 = pygame.mixer.Channel(0)
-#channel2 = pygame.mixer.Channel(1) tried using this for sizzling (unsuccessful)
+channel2 = pygame.mixer.Channel(1) # tried using this for sizzling (unsuccessful)
 
 # sound playing boolean
 sound_playing = False
+sound_playing_2 = False
 
 # Track how long the meat is being cooked
 cooking_time = 0
@@ -227,7 +230,7 @@ def gameover_menu():
 def game_loop():
     global running, counter, text, meat_x, meat_y, \
     dragging, sound_playing, ouch_sound, cooking_time, \
-    meat_state
+    meat_state, sound_playing_2
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -274,10 +277,10 @@ def game_loop():
         grill_rect.width = grill.get_width() // 2
         grill_rect.height = grill.get_height() // 2
         hand_mask = pygame.mask.from_surface(hand)
-        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
+        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect) for debugging purposes
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
-        #pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
+        #pygame.draw.rect(screen, pygame.Color('green'), grill_rect) for debugging purposes
         grill_mask.fill()
         pygame.mouse.set_visible(False)
 
@@ -312,6 +315,9 @@ def game_loop():
 
         if grill_rect.colliderect(meat_rect) and not dragging:  # for smoke on grill
             smoke_group.update()
+            if not sound_playing_2:
+                channel2.play(sizzling_sound, loops=-1)
+                sound_playing_2 = True
             if len(smoke_group) < 100:
                 pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
                 angle = randint(-30, 30)
@@ -321,6 +327,10 @@ def game_loop():
             else:
                 smoke_group.remove(smoke_group.sprites()[0])
             smoke_group.draw(screen)
+        else:
+            if sound_playing_2:
+                channel2.stop()
+                sound_playing_2 = False
 
         pygame.display.flip()
         clock.tick(60)
