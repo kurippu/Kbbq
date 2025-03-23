@@ -23,10 +23,12 @@ plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
 soju = pygame.image.load('glass.webp').convert_alpha()
+big_red_button = pygame.image.load('meat_button.png.png').convert_alpha()
 
 #in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
 soju = pygame.transform.scale(soju, (280,280))
+big_red_button = pygame.transform.scale(big_red_button, (200, 200))
 
 pygame.display.set_icon(beer)
 
@@ -49,6 +51,7 @@ exit_button = button.Button(700, 300, exiting_img, 0.8)
 #make the pause/exit button instances
 resume_button = button.Button(100, 300, resume_img, 0.8)
 exit_mid_game_button = button.Button(700, 300, exit_mid_game_img, 0.8)
+order_meat_button = button.Button(100, 500, big_red_button, 0.8)
 
 smoke_group = pygame.sprite.Group()
 
@@ -85,6 +88,12 @@ def draw_plate(x,y):
 def draw_meat(x, y):
     screen.blit(meat, (x, y))
     #screen.blit(meat_2,(0, 0))
+
+def order_meat(x,y):
+
+
+    if order_meat_button.draw(screen):
+        draw_meat(x,y)
 
 def main_menu():
     screen.fill((205, 205, 253))
@@ -167,6 +176,7 @@ def game_loop():
 
         draw_plate(plate_x, plate_y)
         draw_meat(meat_x, meat_y)
+        order_meat(meat_x, meat_y)
 
         player(player_x, player_y)
         mouse_x,mouse_y = pygame.mouse.get_pos()
