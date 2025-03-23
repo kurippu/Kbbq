@@ -19,9 +19,11 @@ beer = pygame.image.load('beercan.png').convert_alpha()
 grill = pygame.image.load('grill.webp').convert_alpha()
 meat = pygame.image.load('Meat.png').convert_alpha()
 plate = pygame.image.load('plate.png').convert_alpha()
+plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
 #soju = pygame.image.load('').convert_alpha()
+
 #in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
 
@@ -135,6 +137,7 @@ def game_loop():
         screen.fill((85, 52, 43))
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
+        screen.blit(plate_2, (500,-50))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
@@ -185,7 +188,7 @@ def game_loop():
                     mid_game_menu()
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
-            while meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
+            if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                     and not dragging: #for smoke on grill
                 if len(smoke_group) < 100:
                     pos = [meat_x + randint(-10, 10), meat_y + randint(-10, 10)]
@@ -200,11 +203,8 @@ def game_loop():
 
         pygame.display.flip()
         clock.tick(60)
-        # delta_time = clock.tick(60) / 1000
-        # delta_time = max(0.001, min(0.1, delta_time))
-
+       
 main_menu()
 
 pygame.quit()
 sys.exit()
-#yeah yeah
