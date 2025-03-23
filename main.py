@@ -185,7 +185,7 @@ def game_loop():
                     mid_game_menu()
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
-            while meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
+            if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                     and not dragging: #for smoke on grill
                 if len(smoke_group) < 100:
                     pos = [meat_x + randint(-10, 10), meat_y + randint(-10, 10)]
