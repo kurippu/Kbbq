@@ -13,7 +13,7 @@ flags = pygame.SCALED | pygame.FULLSCREEN
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags, vsync=1)
 
 pygame.display.set_caption("The Korean BBQ Experience")
-
+#mari smells
 # in-game sprite objects
 beer = pygame.image.load('beercan.png').convert_alpha()
 grill = pygame.image.load('grill.webp').convert_alpha()
