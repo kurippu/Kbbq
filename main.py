@@ -117,12 +117,11 @@ def mid_game_menu():
     screen.blit(pause_img, (330, 100))
     pygame.mouse.set_visible(True)
 
-    pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
-    pygame.mixer.music.play()
+    pygame.mixer.music.pause()
     run = True
     while run:
         if resume_button.draw(screen):
-           pygame.mixer.music.stop()
+           pygame.mixer.music.unpause()
            run = False
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
@@ -141,6 +140,9 @@ def mid_game_menu():
 
 def game_loop():
     global running, counter, text, meat_x, meat_y, dragging
+
+    pygame.mixer.music.load('KBBQ BG Music.mp3')
+    pygame.mixer.music.play()
 
     while running:
         screen.fill((85, 52, 43))
