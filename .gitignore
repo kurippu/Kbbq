@@ -1,1 +1,38 @@
-__pycache__
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+env/
+*.env
+
+# Pygame specific cache files
+*.ttf.cache
+*.wav.cache
+*.ogg.cache
+
+# IDE/editor files
+.vscode/
+*.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and debug files
+*.log
+*.out
+
+# Dependency files
+*.egg-info/
+dist/
+build/
+
+# Cache
+*.cache
