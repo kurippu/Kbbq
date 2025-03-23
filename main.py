@@ -102,6 +102,7 @@ def main_menu():
     run = True
     while run:
         if start_button.draw(screen):
+            pygame.mixer.music.stop()
             game_loop()
         if exit_button.draw(screen):
             run = False
@@ -122,9 +123,12 @@ def mid_game_menu():
     screen.fill((185, 237, 255))
     screen.blit(pause_img, (330, 100))
     pygame.mouse.set_visible(True)
+
+    pygame.mixer.music.pause()
     run = True
     while run:
         if resume_button.draw(screen):
+            pygame.mixer.music.unpause()
             run = False
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
@@ -145,6 +149,8 @@ def mid_game_menu():
 def game_loop():
     global running, counter, text, meat_x, meat_y, dragging, sound_playing, ouch_sound
 
+    pygame.mixer.music.load('KBBQ BG Music.mp3')
+    pygame.mixer.music.play()
     while running:
         screen.fill((85, 52, 43))
 
