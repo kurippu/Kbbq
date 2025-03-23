@@ -329,11 +329,7 @@ def game_loop():
         
         if plate_2rect.colliderect(meat_rect) and not dragging:
             meat_visible = False
-            
-            if meat_state == 3:
-                pass
-            else:
-                gameover_menu()
+            gameover_menu()
 
         if meat_visible:
                 draw_meat(meat_x, meat_y)
