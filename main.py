@@ -22,10 +22,11 @@ plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
-#soju = pygame.image.load('').convert_alpha()
+soju = pygame.image.load('glass.webp').convert_alpha()
 
 #in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
+soju = pygame.transform.scale(soju, (280,280))
 
 pygame.display.set_icon(beer)
 
@@ -92,6 +93,7 @@ def main_menu():
     run = True
     while run:
         if start_button.draw(screen):
+           pygame.mixer.music.stop()
            game_loop()
         if exit_button.draw(screen):
             run = False
@@ -111,9 +113,13 @@ def mid_game_menu():
     screen.fill((185, 237, 255))
     screen.blit(pause_img, (330, 100))
     pygame.mouse.set_visible(True)
+
+    pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
+    pygame.mixer.music.play()
     run = True
     while run:
         if resume_button.draw(screen):
+           pygame.mixer.music.stop()
            run = False
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
@@ -138,6 +144,7 @@ def game_loop():
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
         screen.blit(plate_2, (500,-50))
+        screen.blit(soju, (1000, 400))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
@@ -173,7 +180,7 @@ def game_loop():
         else:
             dragging = False
 
-        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)):
+        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)) and not meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y)):
             ouch_sound = pygame.mixer.Sound("ouch.mp3")
             ouch_sound.play()
 
