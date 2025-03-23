@@ -173,7 +173,8 @@ def game_loop():
         else:
             dragging = False
 
-        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)):
+        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y))\
+                and not dragging and pygame.mouse.get_pressed()[0]:
             ouch_sound = pygame.mixer.Sound("ouch.mp3")
             ouch_sound.play()
 
