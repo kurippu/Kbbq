@@ -130,7 +130,7 @@ sound_playing_2 = False
 # Track how long the meat is being cooked
 cooking_time = 0
 
-meat_visible = True
+#meat_visible = True
 
 def player(x, y):
     screen.blit(hand, (x, y))
@@ -237,7 +237,7 @@ def gameover_menu():
 def game_loop():
     global running, counter, text, meat_x, meat_y, \
     dragging, sound_playing, ouch_sound, cooking_time, \
-    meat_state, meat1, single_meat, sound_playing_2, meat_visible
+    meat_state, meat1, single_meat, sound_playing_2
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -269,7 +269,7 @@ def game_loop():
             player_y = 0
 
         draw_plate(plate_x, plate_y)
-        #meats.draw(screen)
+        draw_meat(meat_x, meat_y)
 
         player(player_x, player_y)
         screen.blit(hand2,(SCREEN_WIDTH//2+ SCREEN_WIDTH//7+15, 0))
@@ -328,11 +328,7 @@ def game_loop():
                 meat_rect.topleft = (meat_x, meat_y)
         
         if plate_2rect.colliderect(meat_rect) and not dragging:
-            meat_visible = False
             gameover_menu()
-
-        if meat_visible:
-                draw_meat(meat_x, meat_y)
 
         if grill_rect.colliderect(meat_rect) and not dragging:  # for smoke on grill
             smoke_group.update()
