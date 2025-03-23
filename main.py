@@ -3,6 +3,7 @@ import pygame
 import button
 import smoke
 from random import *
+from math import *
 
 pygame.init()
 
@@ -172,11 +173,11 @@ def game_loop():
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         meat_rect = meat.get_rect(topleft=(meat_x + 100, meat_y + 100))
-        meat_rect.width = meat.get_width() // 2
-        meat_rect.height = meat.get_height() // 2
+        meat_rect.width = meat.get_width() / 2
+        meat_rect.height = meat.get_height() / 2
         grill_rect = grill.get_rect(center=(SCREEN_WIDTH / 2 + 95, SCREEN_HEIGHT // 2 + 230))
-        grill_rect.width = grill.get_width() // 2
-        grill_rect.height = grill.get_height() // 2
+        grill_rect.width = grill.get_width() / 2
+        grill_rect.height = grill.get_height() / 2
         hand_mask = pygame.mask.from_surface(hand)
         # pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
         meat_mask = pygame.mask.from_surface(meat)
