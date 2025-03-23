@@ -73,7 +73,10 @@ plate_y = meat_y - 70
 dragging = False
 
 def player(x, y):
-    screen.blit(hand,(x ,y))
+   # screen.blit(hand,(x ,y))
+   # Offset hand image to appear above the cursor
+    offset_y = -150  # You can tweak this value as needed
+    screen.blit(hand, (x - hand.get_width() // 2, y + offset_y))
 
 
 def draw_plate(x,y):
@@ -166,13 +169,14 @@ def game_loop():
         player(player_x, player_y)
         mouse_x,mouse_y = pygame.mouse.get_pos()
 
+
         meat_rect = meat.get_rect(topleft=(meat_x, meat_y))
         grill_rect = grill.get_rect()
         hand_mask = pygame.mask.from_surface(hand)
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
         grill_mask.fill()
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
 
         if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                 and pygame.mouse.get_pressed()[0]:
