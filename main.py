@@ -22,11 +22,15 @@ plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
+soju = pygame.image.load('glass.webp').convert_alpha()
+big_red_button = pygame.image.load('meat_button.png.png').convert_alpha()
 #soju = pygame.image.load('').convert_alpha()
 sound_play = False
 
 #in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
+soju = pygame.transform.scale(soju, (280,280))
+big_red_button = pygame.transform.scale(big_red_button, (200, 200))
 
 pygame.display.set_icon(beer)
 
@@ -49,6 +53,7 @@ exit_button = button.Button(700, 300, exiting_img, 0.8)
 #make the pause/exit button instances
 resume_button = button.Button(100, 300, resume_img, 0.8)
 exit_mid_game_button = button.Button(700, 300, exit_mid_game_img, 0.8)
+order_meat_button = button.Button(100, 500, big_red_button, 0.8)
 
 smoke_group = pygame.sprite.Group()
 
@@ -80,6 +85,9 @@ sound_playing = False
 
 def player(x, y):
     screen.blit(hand,(x ,y))
+   # Offset hand image to appear above the cursor
+    #offset_y = -150  # You can tweak this value as needed
+    #screen.blit(hand, (x - hand.get_width() // 2, y + offset_y))
 
 
 def draw_plate(x,y):
@@ -88,6 +96,12 @@ def draw_plate(x,y):
 def draw_meat(x, y):
     screen.blit(meat, (x, y))
     #screen.blit(meat_2,(0, 0))
+
+def order_meat(x,y):
+
+
+    if order_meat_button.draw(screen):
+        draw_meat(x,y)
 
 def main_menu():
     screen.fill((205, 205, 253))
@@ -99,6 +113,7 @@ def main_menu():
     run = True
     while run:
         if start_button.draw(screen):
+           pygame.mixer.music.stop()
            game_loop()
         if exit_button.draw(screen):
             run = False
@@ -118,9 +133,12 @@ def mid_game_menu():
     screen.fill((185, 237, 255))
     screen.blit(pause_img, (330, 100))
     pygame.mouse.set_visible(True)
+
+    pygame.mixer.music.pause()
     run = True
     while run:
         if resume_button.draw(screen):
+           pygame.mixer.music.unpause()
            run = False
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
@@ -140,11 +158,15 @@ def mid_game_menu():
 def game_loop():
     global running, counter, text, meat_x, meat_y, dragging, sound_playing, ouch_sound
 
+    pygame.mixer.music.load('KBBQ BG Music.mp3')
+    pygame.mixer.music.play()
+
     while running:
         screen.fill((85, 52, 43))
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
         screen.blit(plate_2, (500,-50))
+        screen.blit(soju, (1000, 400))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
@@ -162,16 +184,21 @@ def game_loop():
 
         draw_plate(plate_x, plate_y)
         draw_meat(meat_x, meat_y)
+        order_meat(meat_x, meat_y)
 
         player(player_x, player_y)
         mouse_x,mouse_y = pygame.mouse.get_pos()
 
+
         meat_rect = meat.get_rect(topleft=(meat_x, meat_y))
         grill_rect = grill.get_rect()
+        soju_rect = soju.get_rect()
         hand_mask = pygame.mask.from_surface(hand)
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
+        soju_mask = pygame.mask.from_surface(soju)
         grill_mask.fill()
+        soju_mask.fill()
         pygame.mouse.set_visible(False)
 
         if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
@@ -182,6 +209,13 @@ def game_loop():
 
         if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y))\
                 and not dragging and pygame.mouse.get_pressed()[0]:
+            #ouch_sound = pygame.mixer.Sound("ouch.mp3")
+            #ouch_sound.play()
+            pass
+            
+        if soju_mask.overlap(hand_mask, (mouse_x - soju_rect.x, mouse_y - soju_rect.y)) and pygame.mouse.get_pressed()[0]:
+            ouch_sound = pygame.mixer.Sound("ouch.mp3")
+            ouch_sound.play()
             if not sound_playing:
                 channel.play(ouch_sound, loops=-1)
                 sound_playing = True
@@ -202,17 +236,6 @@ def game_loop():
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
                 meat_rect.topleft = (meat_x, meat_y)
-            if grill_mask.overlap(meat_mask, (meat_rect.x - grill_rect.x, meat_rect.y - grill_rect.y))\
-                    and not dragging: #for smoke on grill
-                if len(smoke_group) < 100:
-                    pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
-                    color = "gray"
-                    angle = randint(-30,30)
-                    direction = pygame.math.Vector2(0, -1).rotate(angle)
-                    speed = randint(50, 100)
-                    smoke.Smoke(smoke_group, pos, color, direction, speed)
-                else:
-                    smoke_group.remove(smoke_group.sprites()[0])
 
         if grill_mask.overlap(meat_mask, (meat_rect.centerx - grill_rect.centerx, meat_rect.centery - grill_rect.centery)) and not dragging: #for smoke on grill
             smoke_group.update()
