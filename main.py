@@ -6,6 +6,7 @@ from random import *
 
 
 pygame.init()
+pygame.mixer.init()
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -18,18 +19,43 @@ pygame.display.set_caption("The Korean BBQ Experience")
 # in-game sprite objects
 beer = pygame.image.load('beercan.png').convert_alpha()
 grill = pygame.image.load('grill.webp').convert_alpha()
-meat = pygame.image.load('Meat.png').convert_alpha()
+meat_images = [
+    pygame.image.load('Meat.png').convert_alpha(),
+    pygame.image.load('meat2.webp').convert_alpha(),
+    pygame.image.load('almost_cooked_meat1.png').convert_alpha(),
+    pygame.image.load('cooked_meat_1.png').convert_alpha(),
+    pygame.image.load('burnt_meat_!.png').convert_alpha
+]
 plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
-meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
 soju = pygame.image.load('glass.webp').convert_alpha()
-sound_play = False
+rice_paper = pygame.image.load('rice_paper.png').convert_alpha()
+meat_button = pygame.image.load('meat_button.png.png').convert_alpha()
+hand2 = pygame.image.load("hand2.png").convert_alpha()
+hand3 = pygame.image.load("hand2.png").convert_alpha()
+pickle_plate = pygame.image.load('plate.png').convert_alpha()
+pickles = pygame.image.load('pickles.png').convert_alpha()
+
+
+# initial meat state
+meat_state = 0
+meat = meat_images[meat_state]
 
 # in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
-soju = pygame.transform.scale(soju, (280, 280))
+hand2 = pygame.transform.scale(hand2,(210,210))
+hand3 = pygame.transform.scale(hand3,(210,210))
+hand2 = pygame.transform.flip(hand2, False, True)
+hand3 = pygame.transform.flip(hand3, True, True)
 
+soju = pygame.transform.scale(soju, (200, 200))
+rice_paper = pygame.transform.scale(rice_paper, (240,240))
+pickles= pygame.transform.scale(pickles, (240,240))
+meat = pygame.transform.scale(meat, (240,240))
+plate = pygame.transform.scale(plate, (320,320))
+meat_button = pygame.transform.scale(meat_button, (240, 240))
+pickle_plate = pygame.transform.scale(plate, (320,320))
 pygame.display.set_icon(beer)
 
 # load in main menu buttons
@@ -38,10 +64,16 @@ exiting_img = pygame.image.load('exiting-image.webp').convert_alpha()
 title_img = pygame.image.load('titlescreen.webp').convert_alpha()
 title_img = pygame.transform.scale(title_img, (1050, 80))
 
+#load in game over menu buttons
+gameover_img = pygame.image.load('gameover-title.png').convert_alpha()
+again_img = pygame.image.load('Again_button.png').convert_alpha()
+
+
 # pause/exit menu buttons images
 resume_img = pygame.image.load('resume-image.webp').convert_alpha()
 exit_mid_game_img = pygame.image.load('exit-image.webp').convert_alpha()
 pause_img = pygame.image.load('Paused_menu_screen.webp').convert_alpha()
+again_img=pygame.transform.scale(again_img, (exit_mid_game_img.get_width(), exit_mid_game_img.get_height()))
 
 # make the button instances
 start_button = button.Button(100, 300, start_img, 0.8)
@@ -49,6 +81,8 @@ exit_button = button.Button(700, 300, exiting_img, 0.8)
 # make the pause/exit button instances
 resume_button = button.Button(100, 300, resume_img, 0.8)
 exit_mid_game_button = button.Button(700, 300, exit_mid_game_img, 0.8)
+#make the again button instance
+again_button = button.Button(100, 300, again_img, 0.8)
 
 smoke_group = pygame.sprite.Group()
 
@@ -67,17 +101,27 @@ player_y = 400
 meat_x = 50
 meat_y = 50
 
-plate_x = meat_x - 105
-plate_y = meat_y - 70
+plate_x = meat_x - 85
+plate_y = meat_y - 60
 
 dragging = False
 
+# Sound effects
 ouch_sound = pygame.mixer.Sound("ouch.mp3")
+ouch_sound.set_volume(1.0)
 
-channel = pygame.mixer.Channel(0)
+#sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
+#sizzling_sound.set_volume(1.0)
 
+# channel to make sure one sound effect is playing at a time
+channel1 = pygame.mixer.Channel(0)
+#channel2 = pygame.mixer.Channel(1) tried using this for sizzling (unsuccessful)
+
+# sound playing boolean
 sound_playing = False
 
+# Track how long the meat is being cooked
+cooking_time = 0
 
 def player(x, y):
     screen.blit(hand, (x, y))
@@ -97,6 +141,7 @@ def main_menu():
 
     pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
     pygame.mixer.music.play()
+    pygame.mixer.music.set_volume(0.4)
 
     screen.blit(title_img, (110, 200))
     run = True
@@ -145,9 +190,44 @@ def mid_game_menu():
 
         pygame.display.update()
 
+def gameover_menu():
+    global counter, text
+
+    screen.fill((205, 205, 253))
+    pygame.mouse.set_visible(True)
+
+    pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
+    pygame.mixer.music.play()
+    pygame.mixer.music.set_volume(0.4)
+
+    screen.blit(gameover_img, (110, 100))
+    run = True
+    while run:
+        if again_button.draw(screen):
+            pygame.mixer.music.stop()
+            counter, text = 60, '60'.rjust(3)
+            game_loop()
+        elif exit_mid_game_button.draw(screen):
+            pygame.quit()
+            sys.exit()
+
+        # Event handler
+        for event in pygame.event.get():
+            # Quit game
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+
+        pygame.display.update()
+
+
 
 def game_loop():
-    global running, counter, text, meat_x, meat_y, dragging, sound_playing, ouch_sound
+    global running, counter, text, meat_x, meat_y, \
+    dragging, sound_playing, ouch_sound, cooking_time, \
+    meat_state
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -157,7 +237,12 @@ def game_loop():
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
         screen.blit(plate_2, (500, -50))
-        screen.blit(soju, (1000, 300))
+        draw_plate((SCREEN_WIDTH//1.5 )- 88,(SCREEN_HEIGHT//1.5) -65)
+        screen.blit(pickles,((SCREEN_WIDTH//1.5),(SCREEN_HEIGHT//1.5)))
+        screen.blit(soju, (900, 320))
+        draw_plate(885, 40)
+        screen.blit(rice_paper, (950, 100))
+        screen.blit(meat_button, (100, 400))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
@@ -177,6 +262,9 @@ def game_loop():
         draw_meat(meat_x, meat_y)
 
         player(player_x, player_y)
+        screen.blit(hand2,(SCREEN_WIDTH//2+ SCREEN_WIDTH//7+15, 0))
+        screen.blit(hand3,(SCREEN_WIDTH//2-SCREEN_WIDTH//5-35, 0))
+        
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         meat_rect = meat.get_rect(topleft=(meat_x + 100, meat_y + 100))
@@ -186,10 +274,10 @@ def game_loop():
         grill_rect.width = grill.get_width() // 2
         grill_rect.height = grill.get_height() // 2
         hand_mask = pygame.mask.from_surface(hand)
-        # pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
+        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
-        # pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
+        #pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
         grill_mask.fill()
         pygame.mouse.set_visible(False)
 
@@ -202,17 +290,17 @@ def game_loop():
         if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)) \
                 and not dragging and pygame.mouse.get_pressed()[0]:
             if not sound_playing:
-                channel.play(ouch_sound, loops=-1)
+                channel1.play(ouch_sound, loops=-1)
                 sound_playing = True
         else:
             if sound_playing:
-                channel.stop()
+                channel1.stop()
                 sound_playing = False
 
         for event in pygame.event.get():
             if event.type == pygame.USEREVENT:
                 counter -= 1
-                text = f'TIME REMAINING: {str(counter).rjust(3) if counter > 0 else "TIME IS UP!"}'
+                text = f'TIME REMAINING: {str(counter).rjust(3) if counter > 0 else gameover_menu()}'
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
@@ -236,6 +324,8 @@ def game_loop():
 
         pygame.display.flip()
         clock.tick(60)
+
+
 
 
 main_menu()
