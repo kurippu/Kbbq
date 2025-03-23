@@ -162,7 +162,7 @@ def game_loop():
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
         grill_mask.fill()
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
 
         if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                 and pygame.mouse.get_pressed()[0]:
@@ -170,7 +170,7 @@ def game_loop():
         else:
             dragging = False
 
-        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y)):
+        if grill_mask.overlap(hand_mask, (mouse_x - grill_rect.x, mouse_y - grill_rect.y))  :
             ouch_sound = pygame.mixer.Sound("ouch.mp3")
             ouch_sound.play()
 
@@ -185,7 +185,7 @@ def game_loop():
                     mid_game_menu()
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
-            while meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
+            if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))\
                     and not dragging: #for smoke on grill
                 if len(smoke_group) < 100:
                     pos = [meat_x + randint(-10, 10), meat_y + randint(-10, 10)]
