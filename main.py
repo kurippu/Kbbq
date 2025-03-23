@@ -1,9 +1,12 @@
 import sys
 import pygame
+from pygame.examples.audiocapture import sound
+
 import button
 import smoke
 from random import *
 #import meat
+
 
 
 pygame.init()
@@ -27,6 +30,7 @@ meat_images = [
     pygame.image.load('cooked_meat_1.png').convert_alpha(),
     pygame.image.load('burnt_meat_!.png').convert_alpha()
 ]
+
 plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
@@ -37,7 +41,6 @@ hand2 = pygame.image.load("hand2.png").convert_alpha()
 hand3 = pygame.image.load("hand2.png").convert_alpha()
 pickle_plate = pygame.image.load('plate.png').convert_alpha()
 pickles = pygame.image.load('pickles.png').convert_alpha()
-
 
 # initialize meat array for summoning meat
 meat_state = 0
@@ -113,15 +116,19 @@ dragging = False
 ouch_sound = pygame.mixer.Sound("ouch.mp3")
 ouch_sound.set_volume(1.0)
 
-#sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
-#sizzling_sound.set_volume(1.0)
+sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
+sizzling_sound.set_volume(1.0)
 
 # channel to make sure one sound effect is playing at a time
 channel1 = pygame.mixer.Channel(0)
-#channel2 = pygame.mixer.Channel(1) tried using this for sizzling (unsuccessful)
+channel2 = pygame.mixer.Channel(1) # tried using this for sizzling (unsuccessful)
 
 # sound playing boolean
 sound_playing = False
+sound_playing_2 = False
+
+# Track how long the meat is being cooked
+cooking_time = 0
 
 # Track how long the meat is being cooked
 cooking_time = 0
@@ -129,10 +136,8 @@ cooking_time = 0
 def player(x, y):
     screen.blit(hand, (x, y))
 
-
 def draw_plate(x, y):
     screen.blit(plate, (x, y))
-
 
 def draw_meat(x, y):
     screen.blit(meat1, (x, y))
@@ -181,6 +186,7 @@ def mid_game_menu():
         if resume_button.draw(screen):
             pygame.mixer.music.unpause()
             run = False
+            
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
             sys.exit()
@@ -213,6 +219,7 @@ def gameover_menu():
             pygame.mixer.music.stop()
             counter, text = 60, '60'.rjust(3)
             game_loop()
+            
         elif exit_mid_game_button.draw(screen):
             pygame.quit()
             sys.exit()
@@ -228,12 +235,10 @@ def gameover_menu():
 
         pygame.display.update()
 
-
-
 def game_loop():
     global running, counter, text, meat_x, meat_y, \
     dragging, sound_playing, ouch_sound, cooking_time, \
-    meat_state, meat1, single_meat
+    meat_state, meat1, single_meat, sound_playing_2
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -277,14 +282,15 @@ def game_loop():
         meat_rect = meat1.get_rect(topleft=(meat_x + 100, meat_y + 100))
         meat_rect.width = meat1.get_width() // 2
         meat_rect.height = meat1.get_height() // 2
+
         grill_rect = grill.get_rect(center=(SCREEN_WIDTH / 2 + 95, SCREEN_HEIGHT // 2 + 230))
         grill_rect.width = grill.get_width() // 2
         grill_rect.height = grill.get_height() // 2
         hand_mask = pygame.mask.from_surface(hand)
-        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
-        meat_mask = pygame.mask.from_surface(meat1)
+        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect) for debugging purposes
+        meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
-        #pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
+        #pygame.draw.rect(screen, pygame.Color('green'), grill_rect) for debugging purposes
         grill_mask.fill()
         plate_2rect = plate_2.get_rect(topleft=(600,0))
         plate_2rect.width = plate_2.get_width()//2
@@ -322,22 +328,12 @@ def game_loop():
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
                 meat_rect.topleft = (meat_x, meat_y)
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     if single_meat.rect.collidepoint(event.pos):
-            #         single_meat.start_drag(event.pos[0], event.pos[1])
-            #         dragging = True
 
-            # if event.type == pygame.MOUSEBUTTONUP:
-            #     if dragging:
-            #         single_meat.stop_drag()
-            #         dragging = False
-
-            # if event.type == pygame.MOUSEMOTION:
-            #     if dragging:
-            #         single_meat.update(event.pos[0], event.pos[1])
-
-        if grill_rect.colliderect(meat_rect) and not dragging:  # for smoke on grill & cooking
+        if grill_rect.colliderect(meat_rect) and not dragging:  # for smoke on grill
             smoke_group.update()
+            if not sound_playing_2:
+                channel2.play(sizzling_sound, loops=-1)
+                sound_playing_2 = True
             if len(smoke_group) < 100:
                 pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
                 angle = randint(-30, 30)
@@ -347,6 +343,10 @@ def game_loop():
             else:
                 smoke_group.remove(smoke_group.sprites()[0])
             smoke_group.draw(screen)
+        else:
+            if sound_playing_2:
+                channel2.stop()
+                sound_playing_2 = False
 
             cooking_time += 1
         
@@ -371,7 +371,6 @@ def game_loop():
 
         pygame.display.flip()
         clock.tick(60)
-
 
 main_menu()
 
