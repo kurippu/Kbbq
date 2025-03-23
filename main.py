@@ -3,7 +3,7 @@ import pygame
 import button
 import smoke
 from random import *
-
+from math import *
 pygame.init()
 
 SCREEN_WIDTH = 1280
@@ -22,7 +22,8 @@ plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
-#soju = pygame.image.load('').convert_alpha()
+
+soju = pygame.image.load('glass.webp').convert_alpha()
 sound_play = False
 
 #in-game transformations (aka resizing our pngs)
@@ -166,11 +167,17 @@ def game_loop():
         player(player_x, player_y)
         mouse_x,mouse_y = pygame.mouse.get_pos()
 
-        meat_rect = meat.get_rect(topleft=(meat_x, meat_y))
-        grill_rect = grill.get_rect()
+        meat_rect = meat.get_rect(topleft=(meat_x+100, meat_y+100))
+        meat_rect.width = meat.get_width() / 2
+        meat_rect.height = meat.get_height() / 2
+        grill_rect = grill.get_rect(center= (SCREEN_WIDTH/2+95, SCREEN_HEIGHT//2+230))
+        grill_rect.width = grill.get_width()/2
+        grill_rect.height = grill.get_height()/2
         hand_mask = pygame.mask.from_surface(hand)
+        #pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
         meat_mask = pygame.mask.from_surface(meat)
         grill_mask = pygame.mask.from_surface(grill)
+       # pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
         grill_mask.fill()
         pygame.mouse.set_visible(False)
 
@@ -202,19 +209,9 @@ def game_loop():
             if event.type == pygame.MOUSEMOTION and dragging:
                 meat_x, meat_y = mouse_x, mouse_y
                 meat_rect.topleft = (meat_x, meat_y)
-            if grill_mask.overlap(meat_mask, (meat_rect.x - grill_rect.x, meat_rect.y - grill_rect.y))\
-                    and not dragging: #for smoke on grill
-                if len(smoke_group) < 100:
-                    pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
-                    color = "gray"
-                    angle = randint(-30,30)
-                    direction = pygame.math.Vector2(0, -1).rotate(angle)
-                    speed = randint(50, 100)
-                    smoke.Smoke(smoke_group, pos, color, direction, speed)
-                else:
-                    smoke_group.remove(smoke_group.sprites()[0])
 
-        if grill_mask.overlap(meat_mask, (meat_rect.centerx - grill_rect.centerx, meat_rect.centery - grill_rect.centery)) and not dragging: #for smoke on grill
+
+        if grill_rect.colliderect(meat_rect) and not dragging: #for smoke on grill
             smoke_group.update()
             if len(smoke_group) < 100:
                 pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
