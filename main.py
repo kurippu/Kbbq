@@ -23,12 +23,12 @@ plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
 meat_2 = pygame.image.load('meat2.webp').convert_alpha()
 hand = pygame.image.load('hand.webp').convert_alpha()
-
 soju = pygame.image.load('glass.webp').convert_alpha()
 sound_play = False
 
 # in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
+soju = pygame.transform.scale(soju, (280, 280))
 
 pygame.display.set_icon(beer)
 
@@ -150,6 +150,7 @@ def game_loop():
 
         screen.blit(grill, (SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4))
         screen.blit(plate_2, (500, -50))
+        screen.blit(soju, (1000, 300))
 
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
