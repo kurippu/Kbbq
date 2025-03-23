@@ -4,6 +4,8 @@ import button
 import smoke
 from random import *
 from math import *
+import random
+import time
 
 pygame.init()
 
@@ -19,12 +21,22 @@ pygame.display.set_caption("The Korean BBQ Experience")
 beer = pygame.image.load('beercan.png').convert_alpha()
 grill = pygame.image.load('grill.webp').convert_alpha()
 meat = pygame.image.load('Meat.png').convert_alpha()
+meat_2 = pygame.image.load('meat2.webp').convert_alpha()
+
 plate = pygame.image.load('plate.png').convert_alpha()
 plate_2 = pygame.image.load('plate-2.png').convert_alpha()
-meat_2 = pygame.image.load('meat2.webp').convert_alpha()
+
 hand = pygame.image.load('hand.webp').convert_alpha()
 soju = pygame.image.load('glass.webp').convert_alpha()
 sound_play = False
+
+
+meat1_2_cooking = pygame.image.load('New_Piskel-1.png_1.webp').convert_alpha()
+meat1_2_cooked = pygame.image.load('New_Piskel-1.png_2 (1).webp').convert_alpha()
+
+meat_3 = pygame.image.load('New Piskel-1.png (2).png').convert_alpha()
+meat_3_cooking = pygame.image.load('New Piskel-1.png (3).png').convert_alpha()
+meat_3_cooked = pygame.image.load('New Piskel-1.png (4).png').convert_alpha()
 
 # in-game transformations (aka resizing our pngs)
 hand = pygame.transform.scale(hand, (400, 400))
@@ -78,6 +90,7 @@ channel = pygame.mixer.Channel(0)
 
 sound_playing = False
 
+cooking_time = 0
 
 def player(x, y):
     screen.blit(hand, (x, y))
@@ -87,8 +100,15 @@ def draw_plate(x, y):
     screen.blit(plate, (x, y))
 
 
-def draw_meat(x, y):
-    screen.blit(meat, (x, y))
+def draw_meat(x, y,meat_number):
+    if meat_number == 1:
+        screen.blit(meat, (x, y))
+    elif meat_number == 2:
+        screen.blit(meat_2, (x, y))
+    elif meat_number == 3:
+        screen.blit(meat_3, (x, y))
+
+
     # screen.blit(meat_2,(0, 0))
 
 
@@ -147,7 +167,10 @@ def mid_game_menu():
 
 
 def game_loop():
-    global running, counter, text, meat_x, meat_y, dragging, sound_playing, ouch_sound
+    global running, counter, text, meat_x, meat_y, dragging, sound_playing, ouch_sound, random_meat, \
+    cooking_time
+
+    random_meat = (random.randint(1, 3))
 
     pygame.mixer.music.load('KBBQ BG Music.mp3')
     pygame.mixer.music.play()
@@ -162,38 +185,61 @@ def game_loop():
         # Render the Time Remaining timer
         screen.blit(font.render(text, True, (255, 255, 255)), (32, 48))
 
-        player_x, player_y = pygame.mouse.get_pos()
-
-        if player_x >= SCREEN_WIDTH:
-            player_x = SCREEN_WIDTH
-        elif player_x == 0:
-            player_x = 0
-        if player_y >= SCREEN_HEIGHT:
-            player_y = SCREEN_HEIGHT
-        elif player_y == 0:
-            player_y = 0
-
-        draw_plate(plate_x, plate_y)
-        draw_meat(meat_x, meat_y)
-
-        player(player_x, player_y)
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        #boundaries
+        if mouse_x >= SCREEN_WIDTH:
+            mouse_x = SCREEN_WIDTH
+        elif mouse_x == 0:
+            mouse_x = 0
+        if mouse_y >= SCREEN_HEIGHT:
+            mouse_y = SCREEN_HEIGHT
+        elif mouse_y == 0:
+            mouse_y = 0
+
+        #draws the meat and the plate
+        draw_plate(plate_x, plate_y)
+
+        draw_meat(meat_x, meat_y, 2)
+
+
+        #draws the hand based on mouse position
+        player(mouse_x, mouse_y)
+
+
 
         meat_rect = meat.get_rect(topleft=(meat_x + 100, meat_y + 100))
         meat_rect.width = meat.get_width() / 2
         meat_rect.height = meat.get_height() / 2
+
+        meat_2_rect = meat_2.get_rect(topleft=(meat_x + 100, meat_y + 100))
+        meat_2_rect.width = meat_2.get_width() / 2
+        meat_2_rect.height = meat_2.get_height() / 2
+        meat_2_mask = pygame.mask.from_surface(meat_2)
+
+        meat_3_rect = meat_3.get_rect(topleft=(meat_x + 100, meat_y + 100))
+        meat_3_rect.width = meat_3.get_width() / 2
+        meat_3_rect.height = meat_3.get_height() / 2
+        meat_3_mask = pygame.mask.from_surface(meat_3)
+
         grill_rect = grill.get_rect(center=(SCREEN_WIDTH / 2 + 95, SCREEN_HEIGHT // 2 + 230))
         grill_rect.width = grill.get_width() / 2
         grill_rect.height = grill.get_height() / 2
+
+
         hand_mask = pygame.mask.from_surface(hand)
-        # pygame.draw.rect(screen, pygame.Color('red'), meat_rect)
         meat_mask = pygame.mask.from_surface(meat)
+
         grill_mask = pygame.mask.from_surface(grill)
-        # pygame.draw.rect(screen, pygame.Color('green'), grill_rect)
         grill_mask.fill()
+
+
         pygame.mouse.set_visible(False)
 
-        if meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y)) \
+
+
+        if ((meat_mask.overlap(hand_mask, (mouse_x - meat_rect.x, mouse_y - meat_rect.y))) or (meat_2_mask.overlap(hand_mask, (mouse_x - meat_2_rect.x, mouse_y - meat_2_rect.y))) or\
+                (meat_3_mask.overlap(hand_mask, (mouse_x - meat_3_rect.x, mouse_y - meat_3_rect.y))))\
                 and pygame.mouse.get_pressed()[0]:
             dragging = True
         else:
@@ -222,7 +268,7 @@ def game_loop():
                 meat_x, meat_y = mouse_x, mouse_y
                 meat_rect.topleft = (meat_x, meat_y)
 
-        if grill_rect.colliderect(meat_rect) and not dragging:  # for smoke on grill
+        if ((grill_rect.colliderect(meat_rect)) or (grill_rect.colliderect(meat_2_rect)) or (grill_rect.colliderect(meat_3_rect))) and not dragging:  # for smoke on grill
             smoke_group.update()
             if len(smoke_group) < 100:
                 pos = [meat_rect.centerx + randint(-10, 10), meat_rect.centery + randint(-10, 10)]
@@ -230,6 +276,21 @@ def game_loop():
                 direction = pygame.math.Vector2(0, -1).rotate(angle)
                 speed = randint(2, 5)
                 smoke.Smoke(smoke_group, pos, direction, speed)
+                if random_meat == 1 or 2:
+                    cooking_time += 1  # add a second to the cooking_time counter variable each refresh
+                    if cooking_time >= 7.5:
+                        meat1_2_cooking.pos = meat1_2_cooking.get_rect(topleft=(meat_2.x, meat_2.y)) # fix-me, no x or y for meat_2 exists
+                        # pos is not valid here
+                        meat1_2_cooking.width = meat_2.get_width() / 2
+                        meat1_2_cooking.height = meat_2.get_height() / 2
+                        screen.blit(meat1_2_cooking, (50, 50))
+                        meat_2.x = -2000
+                        meat1_2_mask = pygame.mask.from_surface(meat1_2_cooking)
+
+
+                elif random_meat == 3:
+                    if cooking_time == 7.5:
+                        pass
             else:
                 smoke_group.remove(smoke_group.sprites()[0])
             smoke_group.draw(screen)
