@@ -1,4 +1,5 @@
 import pygame
+import os
 
 class Smoke(pygame.sprite.Sprite):
     def __init__(self,
@@ -7,7 +8,7 @@ class Smoke(pygame.sprite.Sprite):
                  direction: pygame.math.Vector2,
                  speed: int):
         super().__init__(groups)
-        self.image = pygame.image.load("smoke.png").convert_alpha()
+        self.image = pygame.image.load(os.path.join('images',"smoke.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (50,50))
         self.rect = self.image.get_rect(center=pos)
         self.direction = direction

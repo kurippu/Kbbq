@@ -1,4 +1,5 @@
 import sys
+import os
 import pygame
 import button
 import smoke
@@ -17,25 +18,25 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags, vsync=1)
 pygame.display.set_caption("The Korean BBQ Experience")
 # mari smells
 # in-game sprite objects
-beer = pygame.image.load('beercan.png').convert_alpha()
-grill = pygame.image.load('grill.webp').convert_alpha()
+beer = pygame.image.load(os.path.join('images', 'beercan.png')).convert_alpha()
+grill = pygame.image.load(os.path.join ('images', 'grill.webp')).convert_alpha()
 meat_images = [
-    pygame.image.load('Meat.png').convert_alpha(),
-    pygame.image.load('meat2.webp').convert_alpha(),
-    pygame.image.load('almost_cooked_meat1.png').convert_alpha(),
-    pygame.image.load('cooked_meat_1.png').convert_alpha(),
-    pygame.image.load('burnt_meat_!.png').convert_alpha
+    pygame.image.load(os.path.join('images','Meat.png')).convert_alpha(),
+    pygame.image.load(os.path.join('images', 'meat2.webp')).convert_alpha(),
+    pygame.image.load(os.path.join('images', 'almost_cooked_meat1.png')).convert_alpha(),
+    pygame.image.load(os.path.join('images','cooked_meat_1.png')).convert_alpha(),
+    pygame.image.load(os.path.join('images', 'burnt_meat_!.png')).convert_alpha
 ]
-plate = pygame.image.load('plate.png').convert_alpha()
-plate_2 = pygame.image.load('plate-2.png').convert_alpha()
-hand = pygame.image.load('hand.webp').convert_alpha()
-soju = pygame.image.load('glass.webp').convert_alpha()
-rice_paper = pygame.image.load('rice_paper.png').convert_alpha()
-meat_button = pygame.image.load('meat_button.png.png').convert_alpha()
-hand2 = pygame.image.load("hand2.png").convert_alpha()
-hand3 = pygame.image.load("hand2.png").convert_alpha()
-pickle_plate = pygame.image.load('plate.png').convert_alpha()
-pickles = pygame.image.load('pickles.png').convert_alpha()
+plate = pygame.image.load(os.path.join('images', 'plate.png')).convert_alpha()
+plate_2 = pygame.image.load(os.path.join('images', 'plate-2.png')).convert_alpha()
+hand = pygame.image.load(os.path.join('images', 'hand.webp')).convert_alpha()
+soju = pygame.image.load(os.path.join('images', 'glass.webp')).convert_alpha()
+rice_paper = pygame.image.load(os.path.join('images','rice_paper.png')).convert_alpha()
+meat_button = pygame.image.load(os.path.join('images','meat_button.png.png')).convert_alpha()
+hand2 = pygame.image.load(os.path.join('images', "hand2.png")).convert_alpha()
+hand3 = pygame.image.load(os.path.join('images',"hand2.png")).convert_alpha()
+pickle_plate = pygame.image.load(os.path.join('images','plate.png')).convert_alpha()
+pickles = pygame.image.load(os.path.join ('images','pickles.png')).convert_alpha()
 
 
 # initial meat state
@@ -59,20 +60,20 @@ pickle_plate = pygame.transform.scale(plate, (320,320))
 pygame.display.set_icon(beer)
 
 # load in main menu buttons
-start_img = pygame.image.load('starting-image.webp').convert_alpha()
-exiting_img = pygame.image.load('exiting-image.webp').convert_alpha()
-title_img = pygame.image.load('titlescreen.webp').convert_alpha()
+start_img = pygame.image.load(os.path.join('images', 'starting-image.webp')).convert_alpha()
+exiting_img = pygame.image.load(os.path.join('images','exiting-image.webp')).convert_alpha()
+title_img = pygame.image.load(os.path.join('images','titlescreen.webp')).convert_alpha()
 title_img = pygame.transform.scale(title_img, (1050, 80))
 
 #load in game over menu buttons
-gameover_img = pygame.image.load('gameover-title.png').convert_alpha()
-again_img = pygame.image.load('Again_button.png').convert_alpha()
+gameover_img = pygame.image.load(os.path.join('images','gameover-title.png')).convert_alpha()
+again_img = pygame.image.load(os.path.join('images','Again_button.png')).convert_alpha()
 
 
 # pause/exit menu buttons images
-resume_img = pygame.image.load('resume-image.webp').convert_alpha()
-exit_mid_game_img = pygame.image.load('exit-image.webp').convert_alpha()
-pause_img = pygame.image.load('Paused_menu_screen.webp').convert_alpha()
+resume_img = pygame.image.load(os.path.join('images','resume-image.webp')).convert_alpha()
+exit_mid_game_img = pygame.image.load(os.path.join('images','exit-image.webp')).convert_alpha()
+pause_img = pygame.image.load(os.path.join('images','Paused_menu_screen.webp')).convert_alpha()
 again_img=pygame.transform.scale(again_img, (exit_mid_game_img.get_width(), exit_mid_game_img.get_height()))
 
 # make the button instances
@@ -115,7 +116,6 @@ ouch_sound.set_volume(1.0)
 
 # channel to make sure one sound effect is playing at a time
 channel1 = pygame.mixer.Channel(0)
-#channel2 = pygame.mixer.Channel(1) tried using this for sizzling (unsuccessful)
 
 # sound playing boolean
 sound_playing = False
