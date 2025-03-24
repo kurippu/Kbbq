@@ -108,7 +108,7 @@ plate_y = meat_y - 60
 dragging = False
 
 # Sound effects
-ouch_sound = pygame.mixer.Sound("ouch.mp3")
+ouch_sound = pygame.mixer.Sound(os.path.join('sounds',"ouch.mp3"))
 ouch_sound.set_volume(1.0)
 
 #sizzling_sound = pygame.mixer.Sound("sizzling.mp3")
@@ -139,7 +139,7 @@ def draw_meat(x, y):
 def main_menu():
     screen.fill((205, 205, 253))
 
-    pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
+    pygame.mixer.music.load(os.path.join('sounds','wave-of-you-relaxing-lofi-305565.mp3'))
     pygame.mixer.music.play()
     pygame.mixer.music.set_volume(0.4)
 
@@ -196,7 +196,7 @@ def gameover_menu():
     screen.fill((205, 205, 253))
     pygame.mouse.set_visible(True)
 
-    pygame.mixer.music.load('wave-of-you-relaxing-lofi-305565.mp3')
+    pygame.mixer.music.load(os.path.join('sounds','wave-of-you-relaxing-lofi-305565.mp3'))
     pygame.mixer.music.play()
     pygame.mixer.music.set_volume(0.4)
 
@@ -229,7 +229,7 @@ def game_loop():
     dragging, sound_playing, ouch_sound, cooking_time, \
     meat_state
 
-    pygame.mixer.music.load('KBBQ BG Music.mp3')
+    pygame.mixer.music.load(os.path.join('sounds','KBBQ BG Music.mp3'))
     pygame.mixer.music.play()
 
     while running:
